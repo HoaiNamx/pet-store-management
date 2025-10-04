@@ -1,0 +1,15 @@
+cd backend rm -f database/*.sqlite mkdir -p database npm run dev
+
+curl -X POST -H "Content-Type: application/json" -d '{"name":"Đồ ăn cho hamster","description":"Thức ăn dành cho hamster"}' http://localhost:5001/api/item-types
+
+curl -X POST -H "Content-Type: application/json" -d '{"name":"Thức ăn cho chó Royal Canin","itemTypeId":1,"sellingPrice":150000,"unit":"kg","description":"Thức ăn khô cho chó trưởng thành"}' http://localhost:5001/api/items
+
+curl -X POST -H "Content-Type: application/json" -d '{"name":"Nguyễn Văn A","phone":"0123456789","address":"Hà Nội"}' http://localhost:5001/api/customers
+
+curl -X POST -H "Content-Type: application/json" -d '{"importDate":"2025-09-27","details":[{"itemId":1,"quantity":50,"costPrice":120000,"expiryDate":"2026-09-27"}],"notes":"Nhập hàng đầu tiên"}' http://localhost:5001/api/inventory/stock-in
+
+curl -X POST -H "Content-Type: application/json" -d '{"customerId":1,"details":[{"itemId":1,"quantity":2,"unitPrice":150000}],"paymentMethod":"cash","notes":"Bán hàng test"}' http://localhost:5001/api/sales
+
+curl http://localhost:5001/api/sales
+
+curl http://localhost:5001/api/sales/summary

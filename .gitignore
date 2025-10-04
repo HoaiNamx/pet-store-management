@@ -1,0 +1,34 @@
+# Mac
+.DS_Store
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment files
+.env
+.env.*
+*.env
+backend/.env
+backend/.env.production
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+backend/database/
+
+# Logs
+*.log
+logs/
+backend/logs/
+
+# Uploads & Backups
+backend/uploads/
+backend/backups/
+uploads/
+backups/
+
+# IDE
+.vscode/
+.idea/
