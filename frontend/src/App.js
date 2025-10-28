@@ -12,6 +12,7 @@ import InventoryPage from './pages/inventory/InventoryPage';
 import StockInPage from './pages/inventory/StockInPage';
 import SalesPage from './pages/sales/SalesPage';
 import NewSalePage from './pages/sales/NewSalePage';
+import SaleDetailPage from './pages/sales/SaleDetailPage';
 import CustomersPage from './pages/customers/CustomersPage';
 import ReportsPage from './pages/reports/ReportsPage';
 
@@ -52,6 +53,7 @@ function App() {
             <Route path="stock-in" element={<StockInPage />} />
             <Route path="sales" element={<SalesPage />} />
             <Route path="sales/new" element={<NewSalePage />} />
+            <Route path="sales/:id" element={<SaleDetailPage />} />
             <Route path="customers" element={<CustomersPage />} />
             <Route path="reports" element={<ReportsPage />} />
           </Route>

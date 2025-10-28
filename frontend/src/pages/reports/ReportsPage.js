@@ -207,8 +207,9 @@ function ReportsPage() {
         ]);
       case 'inventory-value':
         return renderTable([
-          { field: 'name', label: 'Sản phẩm' },
-          { field: 'currentStock', label: 'Tồn kho', align: 'right' },
+          { field: 'itemType', label: 'Loại sản phẩm' },
+          { field: 'totalItems', label: 'Số loại', align: 'right' },
+          { field: 'totalQuantity', label: 'Tồn kho', align: 'right' },
           { field: 'avgCostPrice', label: 'Giá nhập TB', align: 'right', format: formatCurrency },
           { field: 'totalValue', label: 'Giá trị', align: 'right', format: formatCurrency },
         ]);

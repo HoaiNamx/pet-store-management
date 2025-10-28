@@ -46,7 +46,7 @@ function InventoryPage() {
   };
 
   const getStockStatus = (item) => {
-    const stock = item.currentStock || 0;
+    const stock = item.quantity || 0;
     const minStock = item.minStock || 0;
 
     if (stock === 0) {
@@ -104,14 +104,14 @@ function InventoryPage() {
                 >
                   <TableCell>{item.Item?.name || '-'}</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                    {item.currentStock} {item.Item?.unit || ''}
+                    {item.quantity} {item.Item?.unit || ''}
                   </TableCell>
                   <TableCell align="right">{item.minStock}</TableCell>
                   <TableCell align="right">
-                    {formatCurrency(item.avgCostPrice || 0)}
+                    {formatCurrency(item.avgCost || 0)}
                   </TableCell>
                   <TableCell align="right">
-                    {formatCurrency((item.currentStock || 0) * (item.avgCostPrice || 0))}
+                    {formatCurrency((item.quantity || 0) * (item.avgCost || 0))}
                   </TableCell>
                   <TableCell>
                     <Chip label={status.label} color={status.color} size="small" />

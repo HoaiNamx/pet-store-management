@@ -76,6 +76,7 @@ function StockInPage() {
     if (field === 'item') {
       newDetails[index].item = value;
       newDetails[index].itemId = value?.id || null;
+      newDetails[index].currentStock = value?.Inventory?.quantity || 0;
     } else {
       newDetails[index][field] = value;
     }
@@ -194,10 +195,11 @@ function StockInPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell width="30%">Sản phẩm</TableCell>
-                <TableCell width="15%">Số lượng</TableCell>
-                <TableCell width="20%">Giá nhập</TableCell>
-                <TableCell width="20%">Hạn sử dụng</TableCell>
+                <TableCell width="25%">Sản phẩm</TableCell>
+                <TableCell width="10%">Tồn kho</TableCell>
+                <TableCell width="12%">Số lượng</TableCell>
+                <TableCell width="18%">Giá nhập</TableCell>
+                <TableCell width="15%">Hạn sử dụng</TableCell>
                 <TableCell width="15%" align="right">Thành tiền</TableCell>
                 <TableCell width="5%" align="center"></TableCell>
               </TableRow>
@@ -217,6 +219,11 @@ function StockInPage() {
                         <TextField {...params} placeholder="Chọn sản phẩm" size="small" />
                       )}
                     />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {detail.currentStock !== undefined ? detail.currentStock : '-'}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <TextField
