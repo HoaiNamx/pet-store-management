@@ -13,9 +13,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Avatar,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -26,9 +23,7 @@ import {
   Assessment,
   Category,
   LocalShipping,
-  AccountCircle,
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -44,10 +39,8 @@ const menuItems = [
 
 function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -56,20 +49,6 @@ function MainLayout() {
   const handleMenuClick = (path) => {
     navigate(path);
     setMobileOpen(false);
-  };
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-    handleProfileMenuClose();
   };
 
   const drawer = (
@@ -118,40 +97,8 @@ function MainLayout() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Quản lý Cửa hàng Thú cưng
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2">{user?.fullName || user?.username}</Typography>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <Avatar sx={{ width: 32, height: 32 }}>
-                {user?.fullName?.[0] || user?.username?.[0] || <AccountCircle />}
-              </Avatar>
-            </IconButton>
-          </Box>
         </Toolbar>
       </AppBar>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleProfileMenuClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <MenuItem onClick={() => { navigate('/profile'); handleProfileMenuClose(); }}>
-          Hồ sơ
-        </MenuItem>
-        <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
-      </Menu>
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}

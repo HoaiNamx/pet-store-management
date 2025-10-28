@@ -11,7 +11,7 @@ const sequelize = require('./config/database');
 require('./models');
 
 // Import routes
-const authRoutes = require('./routes/auth');
+// const authRoutes = require('./routes/auth'); // Removed - No authentication needed
 const itemTypeRoutes = require('./routes/itemTypes');
 const itemRoutes = require('./routes/items');
 const customerRoutes = require('./routes/customers');
@@ -92,7 +92,7 @@ requiredDirs.forEach(dir => {
 });
 
 // API Routes
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes); // Removed - No authentication needed
 app.use('/api/item-types', itemTypeRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/customers', customerRoutes);
