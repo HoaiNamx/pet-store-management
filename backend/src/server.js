@@ -100,6 +100,40 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/reports', reportRoutes);
 
+// Seed endpoint (for initial database setup)
+app.post('/api/seed', async (req, res) => {
+    try {
+        // Simple security check
+        const adminKey = req.headers['x-admin-key'] || req.query.adminKey;
+        if (adminKey !== process.env.ADMIN_KEY) {
+            return res.status(403).json({
+                success: false,
+                message: 'Forbidden: Invalid admin key'
+            });
+        }
+
+        // Run seed
+        const seedData = require('./config/seed');
+        await seedData();
+
+        res.json({
+            success: true,
+            message: 'Database seeded successfully',
+            credentials: {
+                username: 'admin',
+                password: 'admin123'
+            }
+        });
+    } catch (error) {
+        console.error('Seed endpoint error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to seed database',
+            error: error.message
+        });
+    }
+});
+
 // Health check endpoint - ENHANCED
 app.get('/api/health', async (req, res) => {
     try {
