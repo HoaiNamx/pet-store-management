@@ -14,7 +14,7 @@ const seedData = async () => {
             where: { username: 'admin' },
             defaults: {
                 username: 'admin',
-                password: 'dodo2811',
+                password: 'admin123',
                 fullName: 'System Administrator',
                 role: 'admin',
                 isActive: true
@@ -24,7 +24,7 @@ const seedData = async () => {
         if (createdUser) {
             console.log('✅ Admin user created successfully');
             console.log('   Username: admin');
-            console.log('   Password: dodo2811');
+            console.log('   Password: admin123');
         } else {
             console.log('ℹ️  Admin user already exists');
         }
@@ -72,7 +72,7 @@ const seedData = async () => {
         console.log('');
         console.log('=== LOGIN CREDENTIALS ===');
         console.log('Username: admin');
-        console.log('Password: dodo2811');
+        console.log('Password: admin123');
         console.log('=========================');
 
     } catch (error) {
