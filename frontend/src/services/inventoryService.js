@@ -4,7 +4,12 @@ import { API_ENDPOINTS } from '../config/api';
 const inventoryService = {
   getAll: async (params) => {
     const response = await api.get(API_ENDPOINTS.INVENTORY, { params });
-    return response.data.data?.inventory || response.data.data || [];
+    // Backend returns { success: true, data: { inventory: [...], pagination: {...} } }
+    const data = response.data.data || {};
+    return {
+      inventory: data.inventory || [],
+      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+    };
   },
 
   getByItemId: async (itemId) => {

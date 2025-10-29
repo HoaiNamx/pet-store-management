@@ -41,8 +41,9 @@ function ProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const data = await itemService.getAll();
-      setProducts(data);
+      const data = await itemService.getAll({ page: page + 1, limit: rowsPerPage });
+      // Backend now returns { items: [...], pagination: {...} }
+      setProducts(data.items || []);
       setError(null);
     } catch (err) {
       setError(err.message || 'Không thể tải danh sách sản phẩm');
@@ -56,7 +57,8 @@ function ProductsPage() {
     if (value.trim()) {
       try {
         const data = await itemService.search(value);
-        setProducts(data);
+        // Backend now returns { items: [...], pagination: {...} }
+        setProducts(data.items || []);
       } catch (err) {
         setError(err.message);
       }

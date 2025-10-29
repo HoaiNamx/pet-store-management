@@ -32,10 +32,11 @@ function InventoryPage() {
     try {
       setLoading(true);
       const [invData, lowStockData] = await Promise.all([
-        inventoryService.getAll(),
+        inventoryService.getAll({ page: 1, limit: 1000 }), // Get all for now
         inventoryService.getLowStock(),
       ]);
-      setInventory(invData);
+      // Backend now returns { inventory: [...], pagination: {...} }
+      setInventory(invData.inventory || []);
       setLowStockItems(lowStockData);
       setError(null);
     } catch (err) {

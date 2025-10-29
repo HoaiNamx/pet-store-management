@@ -45,8 +45,9 @@ function ProductDialog({ open, product, onClose }) {
 
   const fetchItemTypes = async () => {
     try {
-      const data = await itemTypeService.getAll();
-      setItemTypes(data);
+      const data = await itemTypeService.getAll({ page: 1, limit: 1000 });
+      // Backend now returns { itemTypes: [...], pagination: {...} }
+      setItemTypes(data.itemTypes || []);
     } catch (err) {
       console.error('Error fetching item types:', err);
     }
