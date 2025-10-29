@@ -149,16 +149,16 @@ function ProductsPage() {
                 <TableRow key={product.id}>
                   <TableCell>{product.id}</TableCell>
                   <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.ItemType?.name || '-'}</TableCell>
+                  <TableCell>{product.itemType?.name || '-'}</TableCell>
                   <TableCell align="right">{formatCurrency(product.sellingPrice)}</TableCell>
                   <TableCell>{product.unit}</TableCell>
                   <TableCell align="right">
-                    {product.Inventory?.currentStock || 0}
+                    {product.inventory?.quantity || 0}
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={product.status === 'active' ? 'Hoạt động' : 'Ngừng bán'}
-                      color={product.status === 'active' ? 'success' : 'default'}
+                      label={product.isActive ? 'Hoạt động' : 'Ngừng bán'}
+                      color={product.isActive ? 'success' : 'default'}
                       size="small"
                     />
                   </TableCell>

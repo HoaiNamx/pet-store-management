@@ -77,7 +77,7 @@ function StockInPage() {
     if (field === 'item') {
       newDetails[index].item = value;
       newDetails[index].itemId = value?.id || null;
-      newDetails[index].currentStock = value?.Inventory?.quantity || 0;
+      newDetails[index].currentStock = value?.inventory?.quantity || 0;
     } else {
       newDetails[index][field] = value;
     }
