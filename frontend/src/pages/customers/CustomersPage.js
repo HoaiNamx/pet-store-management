@@ -27,14 +27,17 @@ function CustomersPage() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, customer: null });
 
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    if (!searchTerm) {
+      fetchCustomers();
+    }
+  }, [page, rowsPerPage]);
 
   const fetchCustomers = async () => {
     try {
@@ -42,6 +45,7 @@ function CustomersPage() {
       const data = await customerService.getAll({ page: page + 1, limit: rowsPerPage });
       // Backend now returns { customers: [...], pagination: {...} }
       setCustomers(data.customers || []);
+      setTotalCount(data.pagination?.total || 0);
       setError(null);
     } catch (err) {
       setError(err.message || 'Không thể tải danh sách khách hàng');
@@ -52,11 +56,13 @@ function CustomersPage() {
 
   const handleSearch = async (value) => {
     setSearchTerm(value);
+    setPage(0); // Reset to first page when searching
     if (value.trim()) {
       try {
         const data = await customerService.search(value);
         // Backend now returns { customers: [...], pagination: {...} }
         setCustomers(data.customers || []);
+        setTotalCount(data.pagination?.total || 0);
       } catch (err) {
         setError(err.message);
       }
@@ -139,25 +145,23 @@ function CustomersPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((customer) => (
-                <TableRow key={customer.id}>
-                  <TableCell>{customer.id}</TableCell>
-                  <TableCell>{customer.name}</TableCell>
-                  <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.email || '-'}</TableCell>
-                  <TableCell>{customer.address || '-'}</TableCell>
-                  <TableCell align="center">
-                    <IconButton size="small" onClick={() => handleEdit(customer)}>
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => handleDeleteClick(customer)}>
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {customers.map((customer) => (
+              <TableRow key={customer.id}>
+                <TableCell>{customer.id}</TableCell>
+                <TableCell>{customer.name}</TableCell>
+                <TableCell>{customer.phone}</TableCell>
+                <TableCell>{customer.email || '-'}</TableCell>
+                <TableCell>{customer.address || '-'}</TableCell>
+                <TableCell align="center">
+                  <IconButton size="small" onClick={() => handleEdit(customer)}>
+                    <Edit fontSize="small" />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => handleDeleteClick(customer)}>
+                    <Delete fontSize="small" />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
             {customers.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} align="center">
@@ -169,7 +173,7 @@ function CustomersPage() {
         </Table>
         <TablePagination
           component="div"
-          count={customers.length}
+          count={totalCount}
           page={page}
           onPageChange={(e, newPage) => setPage(newPage)}
           rowsPerPage={rowsPerPage}
