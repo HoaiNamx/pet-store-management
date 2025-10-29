@@ -170,7 +170,7 @@ const salesController = {
 
         try {
             // Validate input
-            const { error } = createSaleSchema.validate(req.body);
+            const { error, value } = createSaleSchema.validate(req.body);
             if (error) {
                 await transaction.rollback();
                 return res.status(400).json({
@@ -179,7 +179,7 @@ const salesController = {
                 });
             }
 
-            const { customerId, saleDate, details, discount, paymentMethod, notes } = req.body;
+            const { customerId, saleDate, details, discount, paymentMethod, notes } = value;
 
             // Check customer exists (if provided)
             if (customerId) {
