@@ -1,11 +1,19 @@
 import api from './api';
 import { API_ENDPOINTS } from '../config/api';
+import itemService from './itemService';
+import customerService from './customerService';
 
 const reportService = {
   // Dashboard
   getDashboard: async () => {
-    const response = await api.get(API_ENDPOINTS.REPORTS_DASHBOARD);
-    const data = response.data.data || {};
+    // Fetch dashboard data and counts in parallel
+    const [dashboardResponse, itemsData, customersData] = await Promise.all([
+      api.get(API_ENDPOINTS.REPORTS_DASHBOARD),
+      itemService.getAll({ page: 1, limit: 1 }), // Just to get pagination.total
+      customerService.getAll({ page: 1, limit: 1 }) // Just to get pagination.total
+    ]);
+
+    const data = dashboardResponse.data.data || {};
 
     // Backend returns: { today, monthComparison, lowStockItems, topProducts, generatedAt }
     // NOTE: Backend field names are LOWERCASE (totalsales, totalrevenue, totalsold)
@@ -31,8 +39,8 @@ const reportService = {
     return {
       monthRevenue: parseFloat(thisMonth.totalrevenue || 0),  // lowercase from backend
       monthSales: parseInt(thisMonth.totalsales || 0),  // lowercase from backend
-      totalProducts: 0, // Will need backend to provide this
-      totalCustomers: 0, // Will need backend to provide this
+      totalProducts: itemsData.pagination?.total || 0, // From items API
+      totalCustomers: customersData.pagination?.total || 0, // From customers API
       revenueChart: [], // Backend doesn't provide this yet
       topProducts,
       lowStockItems
