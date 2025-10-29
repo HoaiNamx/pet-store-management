@@ -216,7 +216,7 @@ function NewSalePage() {
                 <TableRow key={index}>
                   <TableCell>
                     <Autocomplete
-                      options={items.filter((item) => item.status === 'active')}
+                      options={items.filter((item) => item.isActive)}
                       getOptionLabel={(option) =>
                         `${option.name} (${formatCurrency(option.sellingPrice)})`
                       }

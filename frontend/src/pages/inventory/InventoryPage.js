@@ -103,9 +103,9 @@ function InventoryPage() {
                         : 'inherit',
                   }}
                 >
-                  <TableCell>{item.Item?.name || '-'}</TableCell>
+                  <TableCell>{item.item?.name || '-'}</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                    {item.quantity} {item.Item?.unit || ''}
+                    {item.quantity} {item.item?.unit || ''}
                   </TableCell>
                   <TableCell align="right">{item.minStock}</TableCell>
                   <TableCell align="right">
