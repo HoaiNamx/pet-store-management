@@ -92,13 +92,13 @@ function SaleDetailPage() {
               Khách hàng
             </Typography>
             <Typography variant="body1" gutterBottom>
-              {sale.Customer ? (
+              {sale.customer ? (
                 <>
-                  <strong>{sale.Customer.name}</strong>
+                  <strong>{sale.customer.name}</strong>
                   <br />
-                  {sale.Customer.phone}
-                  {sale.Customer.email && <><br />{sale.Customer.email}</>}
-                  {sale.Customer.address && <><br />{sale.Customer.address}</>}
+                  {sale.customer.phone}
+                  {sale.customer.email && <><br />{sale.customer.email}</>}
+                  {sale.customer.address && <><br />{sale.customer.address}</>}
                 </>
               ) : (
                 'Khách lẻ'
@@ -141,9 +141,9 @@ function SaleDetailPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sale.SaleDetails && sale.SaleDetails.map((detail, index) => (
+              {sale.details && sale.details.map((detail, index) => (
                 <TableRow key={index}>
-                  <TableCell>{detail.Item?.name || `Sản phẩm #${detail.itemId}`}</TableCell>
+                  <TableCell>{detail.item?.name || `Sản phẩm #${detail.itemId}`}</TableCell>
                   <TableCell align="right">{formatCurrency(detail.unitPrice)}</TableCell>
                   <TableCell align="right">{detail.quantity}</TableCell>
                   <TableCell align="right">
@@ -151,7 +151,7 @@ function SaleDetailPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {(!sale.SaleDetails || sale.SaleDetails.length === 0) && (
+              {(!sale.details || sale.details.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={4} align="center">
                     Không có chi tiết sản phẩm
