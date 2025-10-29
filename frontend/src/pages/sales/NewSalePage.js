@@ -56,11 +56,12 @@ function NewSalePage() {
   const fetchData = async () => {
     try {
       const [itemsData, customersData] = await Promise.all([
-        itemService.getAll(),
-        customerService.getAll(),
+        itemService.getAll({ page: 1, limit: 1000 }),
+        customerService.getAll({ page: 1, limit: 1000 }),
       ]);
-      setItems(itemsData);
-      setCustomers(customersData);
+      // Backend now returns { items: [...], pagination: {...} } and { customers: [...], pagination: {...} }
+      setItems(itemsData.items || []);
+      setCustomers(customersData.customers || []);
     } catch (err) {
       setError(err.message);
     }

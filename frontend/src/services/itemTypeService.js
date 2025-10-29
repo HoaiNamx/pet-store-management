@@ -2,9 +2,14 @@ import api from './api';
 import { API_ENDPOINTS } from '../config/api';
 
 const itemTypeService = {
-  getAll: async () => {
-    const response = await api.get(API_ENDPOINTS.ITEM_TYPES);
-    return response.data.data?.itemTypes || response.data.data || [];
+  getAll: async (params) => {
+    const response = await api.get(API_ENDPOINTS.ITEM_TYPES, { params });
+    // Backend returns { success: true, data: { itemTypes: [...], pagination: {...} } }
+    const data = response.data.data || {};
+    return {
+      itemTypes: data.itemTypes || [],
+      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+    };
   },
 
   getById: async (id) => {

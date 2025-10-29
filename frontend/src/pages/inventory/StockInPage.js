@@ -47,8 +47,9 @@ function StockInPage() {
 
   const fetchItems = async () => {
     try {
-      const data = await itemService.getAll();
-      setItems(data);
+      const data = await itemService.getAll({ page: 1, limit: 1000 });
+      // Backend now returns { items: [...], pagination: {...} }
+      setItems(data.items || []);
     } catch (err) {
       setError(err.message);
     }
