@@ -159,7 +159,7 @@ function StockInPage() {
 
       <Paper sx={{ p: 3, mb: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Ngày nhập"
@@ -171,7 +171,7 @@ function StockInPage() {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Ghi chú"
@@ -180,6 +180,8 @@ function StockInPage() {
                 setFormData({ ...formData, notes: e.target.value })
               }
               required={false}
+              multiline
+              rows={3}
             />
           </Grid>
         </Grid>

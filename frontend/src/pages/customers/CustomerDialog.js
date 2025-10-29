@@ -118,7 +118,7 @@ function CustomerDialog({ open, customer, onClose }) {
               value={formData.address}
               onChange={handleChange}
               multiline
-              rows={2}
+              rows={4}
             />
           </Grid>
         </Grid>

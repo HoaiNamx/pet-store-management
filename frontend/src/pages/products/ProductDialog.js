@@ -100,7 +100,7 @@ function ProductDialog({ open, product, onClose }) {
       <DialogTitle>{product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Tên sản phẩm"
@@ -112,7 +112,7 @@ function ProductDialog({ open, product, onClose }) {
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <FormControl fullWidth error={!!errors.itemTypeId}>
               <InputLabel>Loại sản phẩm *</InputLabel>
               <Select
@@ -129,7 +129,7 @@ function ProductDialog({ open, product, onClose }) {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Giá bán"
@@ -142,7 +142,7 @@ function ProductDialog({ open, product, onClose }) {
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Đơn vị"
@@ -177,7 +177,7 @@ function ProductDialog({ open, product, onClose }) {
               value={formData.description}
               onChange={handleChange}
               multiline
-              rows={3}
+              rows={4}
             />
           </Grid>
         </Grid>
