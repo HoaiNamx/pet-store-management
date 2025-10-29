@@ -14,7 +14,7 @@ const stockInSchema = Joi.object({
             expiryDate: Joi.date().optional()
         })
     ).min(1).required(),
-    notes: Joi.string().optional()
+    notes: Joi.string().optional().allow('')
 });
 
 const adjustInventorySchema = Joi.object({
