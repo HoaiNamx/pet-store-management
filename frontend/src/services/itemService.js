@@ -5,7 +5,11 @@ const itemService = {
   getAll: async (params) => {
     const response = await api.get(API_ENDPOINTS.ITEMS, { params });
     // Backend returns { success: true, data: { items: [...], pagination: {...} } }
-    return response.data.data?.items || response.data.data || [];
+    const data = response.data.data || {};
+    return {
+      items: data.items || [],
+      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+    };
   },
 
   getById: async (id) => {
@@ -17,7 +21,11 @@ const itemService = {
     const response = await api.get(API_ENDPOINTS.ITEMS_SEARCH, {
       params: { q: searchTerm },
     });
-    return response.data.data?.items || response.data.data || [];
+    const data = response.data.data || {};
+    return {
+      items: data.items || [],
+      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+    };
   },
 
   getLowStock: async () => {

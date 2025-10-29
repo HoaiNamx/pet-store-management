@@ -29,6 +29,7 @@ function ProductsPage() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0); // Total items from backend
   const [searchTerm, setSearchTerm] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -36,13 +37,24 @@ function ProductsPage() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [page, rowsPerPage, searchTerm]); // Re-fetch when page, rowsPerPage, or searchTerm changes
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const data = await itemService.getAll();
-      setProducts(data);
+      let data;
+
+      if (searchTerm.trim()) {
+        // Search with pagination
+        data = await itemService.search(searchTerm);
+      } else {
+        // Normal fetch with pagination
+        data = await itemService.getAll({ page: page + 1, limit: rowsPerPage });
+      }
+
+      // Backend returns { items: [...], pagination: { total, pages, current, limit } }
+      setProducts(data.items || []);
+      setTotalCount(data.pagination?.total || 0);
       setError(null);
     } catch (err) {
       setError(err.message || 'Không thể tải danh sách sản phẩm');
@@ -51,18 +63,9 @@ function ProductsPage() {
     }
   };
 
-  const handleSearch = async (value) => {
+  const handleSearch = (value) => {
     setSearchTerm(value);
-    if (value.trim()) {
-      try {
-        const data = await itemService.search(value);
-        setProducts(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    } else {
-      fetchProducts();
-    }
+    setPage(0); // Reset to first page when searching
   };
 
   const handleAdd = () => {
@@ -96,8 +99,6 @@ function ProductsPage() {
       fetchProducts();
     }
   };
-
-  const filteredProducts = products;
 
   if (loading) return <Loading />;
 
@@ -143,9 +144,8 @@ function ProductsPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredProducts
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((product) => (
+            {/* No need to slice - backend already returns the correct page */}
+            {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.id}</TableCell>
                   <TableCell>{product.name}</TableCell>
@@ -172,7 +172,7 @@ function ProductsPage() {
                   </TableCell>
                 </TableRow>
               ))}
-            {filteredProducts.length === 0 && (
+            {products.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} align="center">
                   Không có sản phẩm nào
@@ -183,7 +183,7 @@ function ProductsPage() {
         </Table>
         <TablePagination
           component="div"
-          count={filteredProducts.length}
+          count={totalCount} // Use total count from backend
           page={page}
           onPageChange={(e, newPage) => setPage(newPage)}
           rowsPerPage={rowsPerPage}

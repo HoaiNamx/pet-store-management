@@ -7,28 +7,30 @@ const reportService = {
     const response = await api.get(API_ENDPOINTS.REPORTS_DASHBOARD);
     const data = response.data.data || {};
 
-    // Transform backend data structure to match frontend expectations
+    // Backend returns: { today, monthComparison, lowStockItems, topProducts, generatedAt }
+    // NOTE: Backend field names are LOWERCASE (totalsales, totalrevenue, totalsold)
+
     const monthComparison = Array.isArray(data.monthComparison) ? data.monthComparison : [];
     const thisMonth = monthComparison.find(m => m.period === 'this_month') || {};
 
     // Transform low stock items from Sequelize models to flat objects
     const lowStockItems = Array.isArray(data.lowStockItems) ? data.lowStockItems.map(item => ({
       id: item.id,
-      name: item.item?.name || item.Item?.name || 'Unknown',
+      name: item.item?.name || 'Unknown',
       currentStock: item.quantity || 0,
-      minStock: item.minStock || item.min_stock || 0
+      minStock: item.minStock || 0
     })) : [];
 
-    // Transform top products
+    // Transform top products (note: totalsold and totalrevenue are LOWERCASE in backend)
     const topProducts = Array.isArray(data.topProducts) ? data.topProducts.map(p => ({
       name: p.name,
-      quantity: parseInt(p.totalSold || 0),
-      revenue: parseFloat(p.totalRevenue || 0)
+      quantity: parseInt(p.totalsold || 0),  // lowercase from backend
+      revenue: parseFloat(p.totalrevenue || 0)  // lowercase from backend
     })) : [];
 
     return {
-      monthRevenue: parseFloat(thisMonth.totalRevenue || 0),
-      monthSales: parseInt(thisMonth.totalSales || 0),
+      monthRevenue: parseFloat(thisMonth.totalrevenue || 0),  // lowercase from backend
+      monthSales: parseInt(thisMonth.totalsales || 0),  // lowercase from backend
       totalProducts: 0, // Will need backend to provide this
       totalCustomers: 0, // Will need backend to provide this
       revenueChart: [], // Backend doesn't provide this yet

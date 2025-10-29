@@ -4,7 +4,12 @@ import { API_ENDPOINTS } from '../config/api';
 const customerService = {
   getAll: async (params) => {
     const response = await api.get(API_ENDPOINTS.CUSTOMERS, { params });
-    return response.data.data?.customers || response.data.data || [];
+    // Backend returns { success: true, data: { customers: [...], pagination: {...} } }
+    const data = response.data.data || {};
+    return {
+      customers: data.customers || [],
+      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+    };
   },
 
   getById: async (id) => {
@@ -21,7 +26,11 @@ const customerService = {
     const response = await api.get(API_ENDPOINTS.CUSTOMERS_SEARCH, {
       params: { q: searchTerm },
     });
-    return response.data.data?.customers || response.data.data || [];
+    const data = response.data.data || {};
+    return {
+      customers: data.customers || [],
+      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+    };
   },
 
   create: async (customerData) => {

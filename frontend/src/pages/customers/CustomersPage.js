@@ -39,8 +39,9 @@ function CustomersPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const data = await customerService.getAll();
-      setCustomers(data);
+      const data = await customerService.getAll({ page: page + 1, limit: rowsPerPage });
+      // Backend now returns { customers: [...], pagination: {...} }
+      setCustomers(data.customers || []);
       setError(null);
     } catch (err) {
       setError(err.message || 'Không thể tải danh sách khách hàng');
@@ -54,7 +55,8 @@ function CustomersPage() {
     if (value.trim()) {
       try {
         const data = await customerService.search(value);
-        setCustomers(data);
+        // Backend now returns { customers: [...], pagination: {...} }
+        setCustomers(data.customers || []);
       } catch (err) {
         setError(err.message);
       }
