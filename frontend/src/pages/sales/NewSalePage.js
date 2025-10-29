@@ -161,7 +161,7 @@ function NewSalePage() {
 
       <Paper sx={{ p: 3, mb: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Autocomplete
               options={customers}
               getOptionLabel={(option) => `${option.name} - ${option.phone}`}
@@ -174,7 +174,7 @@ function NewSalePage() {
               )}
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12}>
             <FormControl fullWidth>
               <InputLabel>Phương thức thanh toán</InputLabel>
               <Select
@@ -190,7 +190,7 @@ function NewSalePage() {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Ghi chú"
@@ -199,6 +199,8 @@ function NewSalePage() {
                 setFormData({ ...formData, notes: e.target.value })
               }
               required={false}
+              multiline
+              rows={3}
             />
           </Grid>
         </Grid>
