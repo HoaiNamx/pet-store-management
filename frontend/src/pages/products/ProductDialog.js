@@ -96,7 +96,7 @@ function ProductDialog({ open, product, onClose }) {
   };
 
   return (
-    <Dialog open={open} onClose={() => onClose(false)} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={() => onClose(false)} maxWidth="lg" fullWidth>
       <DialogTitle>{product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
