@@ -43,7 +43,7 @@ function NewSalePage() {
       itemId: null,
       item: null,
       quantity: '',
-      unitPrice: '',
+      discount: '',
     },
   ]);
   const [error, setError] = useState(null);
@@ -74,7 +74,7 @@ function NewSalePage() {
         itemId: null,
         item: null,
         quantity: '',
-        unitPrice: '',
+        discount: '',
       },
     ]);
   };
@@ -88,7 +88,7 @@ function NewSalePage() {
     if (field === 'item') {
       newDetails[index].item = value;
       newDetails[index].itemId = value?.id || null;
-      newDetails[index].unitPrice = value?.sellingPrice || '';
+      newDetails[index].discount = '';
     } else {
       newDetails[index][field] = value;
     }
@@ -98,8 +98,10 @@ function NewSalePage() {
   const calculateTotal = () => {
     return details.reduce((sum, detail) => {
       const qty = parseFloat(detail.quantity) || 0;
-      const price = parseFloat(detail.unitPrice) || 0;
-      return sum + qty * price;
+      const sellingPrice = parseFloat(detail.item?.sellingPrice) || 0;
+      const discount = parseFloat(detail.discount) || 0;
+      const finalPrice = sellingPrice - discount;
+      return sum + qty * finalPrice;
     }, 0);
   };
 
@@ -111,12 +113,21 @@ function NewSalePage() {
     }
 
     const validDetails = details
-      .filter((d) => d.itemId && d.quantity > 0 && d.unitPrice > 0)
-      .map((d) => ({
-        itemId: d.itemId,
-        quantity: parseFloat(d.quantity),
-        unitPrice: parseFloat(d.unitPrice),
-      }));
+      .filter((d) => {
+        const sellingPrice = parseFloat(d.item?.sellingPrice) || 0;
+        const discount = parseFloat(d.discount) || 0;
+        const finalPrice = sellingPrice - discount;
+        return d.itemId && d.quantity > 0 && finalPrice > 0;
+      })
+      .map((d) => {
+        const sellingPrice = parseFloat(d.item?.sellingPrice);
+        const discount = parseFloat(d.discount) || 0;
+        return {
+          itemId: d.itemId,
+          quantity: parseFloat(d.quantity),
+          unitPrice: sellingPrice - discount,
+        };
+      });
 
     if (validDetails.length === 0) {
       setError('Vui lòng nhập đầy đủ thông tin cho các sản phẩm');
@@ -206,7 +217,7 @@ function NewSalePage() {
               <TableRow>
                 <TableCell width="40%">Sản phẩm</TableCell>
                 <TableCell width="15%">Số lượng</TableCell>
-                <TableCell width="20%">Đơn giá</TableCell>
+                <TableCell width="20%">Giảm giá</TableCell>
                 <TableCell width="20%" align="right">Thành tiền</TableCell>
                 <TableCell width="5%" align="center"></TableCell>
               </TableRow>
@@ -244,9 +255,9 @@ function NewSalePage() {
                     <TextField
                       type="number"
                       size="small"
-                      value={detail.unitPrice}
+                      value={detail.discount}
                       onChange={(e) =>
-                        handleDetailChange(index, 'unitPrice', e.target.value)
+                        handleDetailChange(index, 'discount', e.target.value)
                       }
                       placeholder="0"
                     />
@@ -254,7 +265,7 @@ function NewSalePage() {
                   <TableCell align="right">
                     {formatCurrency(
                       (parseFloat(detail.quantity) || 0) *
-                        (parseFloat(detail.unitPrice) || 0)
+                        ((parseFloat(detail.item?.sellingPrice) || 0) - (parseFloat(detail.discount) || 0))
                     )}
                   </TableCell>
                   <TableCell align="center">
