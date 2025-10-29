@@ -28,18 +28,20 @@ function SalesPage() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
   const [cancelDialog, setCancelDialog] = useState({ open: false, sale: null });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchSales();
-  }, []);
+  }, [page, rowsPerPage]);
 
   const fetchSales = async () => {
     try {
       setLoading(true);
-      const data = await salesService.getAll();
-      setSales(data);
+      const data = await salesService.getAll({ page: page + 1, limit: rowsPerPage });
+      setSales(data.sales || []);
+      setTotalCount(data.pagination?.total || 0);
       setError(null);
     } catch (err) {
       setError(err.message || 'Không thể tải danh sách đơn hàng');
@@ -116,18 +118,16 @@ function SalesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sales
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((sale) => (
+            {sales.map((sale) => (
                 <TableRow key={sale.id}>
                   <TableCell>#{sale.id}</TableCell>
                   <TableCell>
-                    {sale.Customer ? (
+                    {(sale.customer || sale.Customer) ? (
                       <>
-                        {sale.Customer.name}
+                        {(sale.customer?.name || sale.Customer?.name)}
                         <br />
                         <span style={{ fontSize: '0.875rem', color: '#666' }}>
-                          {sale.Customer.phone}
+                          {(sale.customer?.phone || sale.Customer?.phone)}
                         </span>
                       </>
                     ) : (
@@ -166,7 +166,7 @@ function SalesPage() {
         </Table>
         <TablePagination
           component="div"
-          count={sales.length}
+          count={totalCount}
           page={page}
           onPageChange={(e, newPage) => setPage(newPage)}
           rowsPerPage={rowsPerPage}

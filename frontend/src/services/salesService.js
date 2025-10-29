@@ -5,7 +5,7 @@ const salesService = {
   getAll: async (params) => {
     const response = await api.get(API_ENDPOINTS.SALES, { params });
     // Backend returns { success: true, data: { sales: [...], pagination: {...} } }
-    return response.data.data?.sales || response.data.data || [];
+    return response.data.data || { sales: [], pagination: { total: 0, pages: 0, current: 1, limit: 10 } };
   },
 
   getById: async (id) => {

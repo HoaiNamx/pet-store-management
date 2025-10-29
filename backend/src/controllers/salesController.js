@@ -16,7 +16,7 @@ const createSaleSchema = Joi.object({
     ).min(1).required(),
     discount: Joi.number().min(0).default(0),
     paymentMethod: Joi.string().valid('cash', 'card', 'transfer', 'other').default('cash'),
-    notes: Joi.string().optional()
+    notes: Joi.string().optional().allow('')
 });
 
 const salesController = {
