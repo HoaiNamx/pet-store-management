@@ -70,7 +70,7 @@ function CustomerDialog({ open, customer, onClose }) {
   };
 
   return (
-    <Dialog open={open} onClose={() => onClose(false)} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={() => onClose(false)} maxWidth="md" fullWidth>
       <DialogTitle>
         {customer ? 'Cập nhật khách hàng' : 'Thêm khách hàng mới'}
       </DialogTitle>
