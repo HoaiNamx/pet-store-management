@@ -198,6 +198,7 @@ function NewSalePage() {
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
+              required={false}
             />
           </Grid>
         </Grid>
