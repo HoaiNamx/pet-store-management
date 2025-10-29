@@ -179,6 +179,7 @@ function StockInPage() {
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
+              required={false}
             />
           </Grid>
         </Grid>
@@ -257,6 +258,7 @@ function StockInPage() {
                         handleDetailChange(index, 'expiryDate', e.target.value)
                       }
                       InputLabelProps={{ shrink: true }}
+                      required={false}
                     />
                   </TableCell>
                   <TableCell align="right">
