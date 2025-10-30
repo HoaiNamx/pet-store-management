@@ -35,12 +35,21 @@ function CustomersPage() {
 
   useEffect(() => {
     fetchCustomers();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, searchTerm]); // Re-fetch when page, rowsPerPage, or searchTerm changes
 
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const data = await customerService.getAll({ page: page + 1, limit: rowsPerPage });
+      let data;
+
+      if (searchTerm.trim()) {
+        // Search with pagination
+        data = await customerService.search(searchTerm, { page: page + 1, limit: rowsPerPage });
+      } else {
+        // Normal fetch with pagination
+        data = await customerService.getAll({ page: page + 1, limit: rowsPerPage });
+      }
+
       // Backend now returns { customers: [...], pagination: {...} }
       setCustomers(data.customers || []);
       setTotalCount(data.pagination?.total || 0);
@@ -52,21 +61,9 @@ function CustomersPage() {
     }
   };
 
-  const handleSearch = async (value) => {
+  const handleSearch = (value) => {
     setSearchTerm(value);
     setPage(0); // Reset to first page when searching
-    if (value.trim()) {
-      try {
-        const data = await customerService.search(value);
-        // Backend now returns { customers: [...], pagination: {...} }
-        setCustomers(data.customers || []);
-        setTotalCount(data.pagination?.total || 0);
-      } catch (err) {
-        setError(err.message);
-      }
-    } else {
-      fetchCustomers();
-    }
   };
 
   const handleAdd = () => {

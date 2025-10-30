@@ -46,7 +46,7 @@ function ProductsPage() {
 
       if (searchTerm.trim()) {
         // Search with pagination
-        data = await itemService.search(searchTerm);
+        data = await itemService.search(searchTerm, { page: page + 1, limit: rowsPerPage });
       } else {
         // Normal fetch with pagination
         data = await itemService.getAll({ page: page + 1, limit: rowsPerPage });
