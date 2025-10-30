@@ -22,9 +22,9 @@ const customerService = {
     return response.data.data;
   },
 
-  search: async (searchTerm) => {
+  search: async (searchTerm, params = {}) => {
     const response = await api.get(API_ENDPOINTS.CUSTOMERS_SEARCH, {
-      params: { q: searchTerm },
+      params: { q: searchTerm, ...params },
     });
     const data = response.data.data || {};
     return {
