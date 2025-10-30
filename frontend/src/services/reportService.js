@@ -66,12 +66,43 @@ const reportService = {
 
   getRevenueByCustomer: async (params) => {
     const response = await api.get(API_ENDPOINTS.REPORTS_REVENUE_BY_CUSTOMER, { params });
-    return response.data.data || [];
+    const data = response.data.data || [];
+
+    // Transform backend field names to match frontend expectations
+    if (Array.isArray(data)) {
+      return data.map(item => ({
+        customerId: item.customerId,
+        customerName: item.customerName,
+        customerPhone: item.customerPhone,
+        orderCount: parseInt(item.totalOrders || 0),  // Backend: totalOrders -> Frontend: orderCount
+        totalRevenue: parseFloat(item.totalRevenue || 0),
+        avgOrderValue: parseFloat(item.avgOrderValue || 0),
+        lastPurchase: item.lastPurchase,
+        firstPurchase: item.firstPurchase
+      }));
+    }
+    return [];
   },
 
   getRevenueByProduct: async (params) => {
     const response = await api.get(API_ENDPOINTS.REPORTS_REVENUE_BY_PRODUCT, { params });
-    return response.data.data || [];
+    const data = response.data.data || [];
+
+    // Transform backend field names to match frontend expectations
+    if (Array.isArray(data)) {
+      return data.map(item => ({
+        itemId: item.itemId,
+        productName: item.itemName,  // Backend: itemName -> Frontend: productName
+        itemCode: item.itemCode,
+        itemTypeName: item.itemTypeName,
+        quantitySold: parseInt(item.totalSold || 0),  // Backend: totalSold -> Frontend: quantitySold
+        totalRevenue: parseFloat(item.totalRevenue || 0),
+        avgSellingPrice: parseFloat(item.avgSellingPrice || 0),
+        totalOrders: parseInt(item.totalOrders || 0),
+        estimatedProfit: parseFloat(item.estimatedProfit || 0)
+      }));
+    }
+    return [];
   },
 
   // Product Analytics
@@ -96,7 +127,24 @@ const reportService = {
 
   getProductProfitability: async (params) => {
     const response = await api.get(API_ENDPOINTS.REPORTS_PROFITABILITY, { params });
-    return response.data.data || [];
+    const data = response.data.data || [];
+
+    // Transform backend field names to match frontend expectations
+    if (Array.isArray(data)) {
+      return data.map(item => ({
+        id: item.id,
+        name: item.name,
+        code: item.code,
+        itemType: item.itemType,
+        totalSold: parseInt(item.totalSold || 0),
+        revenue: parseFloat(item.totalRevenue || 0),  // Backend: totalRevenue -> Frontend: revenue
+        avgSellingPrice: parseFloat(item.avgSellingPrice || 0),
+        cost: parseFloat(item.avgCostPrice || 0),  // Backend: avgCostPrice -> Frontend: cost
+        profit: parseFloat(item.totalProfit || 0),  // Backend: totalProfit -> Frontend: profit
+        margin: parseFloat(item.profitMarginPercent || 0)  // Backend: profitMarginPercent -> Frontend: margin
+      }));
+    }
+    return [];
   },
 
   // Inventory Analytics
@@ -129,7 +177,23 @@ const reportService = {
 
   getStockMovementReport: async (params) => {
     const response = await api.get(API_ENDPOINTS.REPORTS_STOCK_MOVEMENT, { params });
-    return response.data.data || [];
+    const data = response.data.data || [];
+
+    // Transform backend field names to match frontend expectations
+    if (Array.isArray(data)) {
+      return data.map(item => ({
+        date: item.date,
+        item: item.itemName,  // Backend: itemName -> Frontend: item
+        itemCode: item.itemCode,
+        type: item.movementType,  // Backend: movementType -> Frontend: type
+        description: item.description,
+        quantity: parseInt(item.quantity || 0),
+        unitPrice: parseFloat(item.unitPrice || 0),
+        totalAmount: parseFloat(item.totalAmount || 0),
+        referenceCode: item.referenceCode
+      }));
+    }
+    return [];
   },
 };
 
