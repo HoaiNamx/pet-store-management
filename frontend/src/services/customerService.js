@@ -26,11 +26,22 @@ const customerService = {
     const response = await api.get(API_ENDPOINTS.CUSTOMERS_SEARCH, {
       params: { q: searchTerm, ...params },
     });
-    const data = response.data.data || {};
-    return {
-      customers: data.customers || [],
-      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
-    };
+    const data = response.data.data;
+
+    // Handle both formats:
+    // 1. Array format: { data: [...] }
+    // 2. Object format: { data: { customers: [...], pagination: {...} } }
+    if (Array.isArray(data)) {
+      return {
+        customers: data,
+        pagination: { current: 1, limit: data.length, total: data.length, pages: 1 }
+      };
+    } else {
+      return {
+        customers: data?.customers || [],
+        pagination: data?.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+      };
+    }
   },
 
   create: async (customerData) => {

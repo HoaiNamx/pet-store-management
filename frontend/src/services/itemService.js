@@ -21,11 +21,22 @@ const itemService = {
     const response = await api.get(API_ENDPOINTS.ITEMS_SEARCH, {
       params: { q: searchTerm, ...params },
     });
-    const data = response.data.data || {};
-    return {
-      items: data.items || [],
-      pagination: data.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
-    };
+    const data = response.data.data;
+
+    // Handle both formats:
+    // 1. Array format: { data: [...] }
+    // 2. Object format: { data: { items: [...], pagination: {...} } }
+    if (Array.isArray(data)) {
+      return {
+        items: data,
+        pagination: { current: 1, limit: data.length, total: data.length, pages: 1 }
+      };
+    } else {
+      return {
+        items: data?.items || [],
+        pagination: data?.pagination || { current: 1, limit: 10, total: 0, pages: 0 }
+      };
+    }
   },
 
   getLowStock: async () => {
