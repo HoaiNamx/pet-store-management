@@ -53,12 +53,13 @@ const reportService = {
     const data = response.data.data || {};
 
     // Backend returns object with results array
+    // NOTE: Backend SQL returns lowercase field names (totalrevenue, totalsales, etc.)
     if (data.results && Array.isArray(data.results)) {
-      // Transform to match frontend expectations (rename 'period' to 'date', 'totalRevenue' to 'revenue')
+      // Transform to match frontend expectations (rename 'period' to 'date', 'totalrevenue' to 'revenue')
       return data.results.map(item => ({
         date: item.period,
-        revenue: parseFloat(item.totalRevenue || 0),
-        sales: parseInt(item.totalSales || 0)
+        revenue: parseFloat(item.totalrevenue || 0),  // Backend: totalrevenue (lowercase)
+        sales: parseInt(item.totalsales || 0)  // Backend: totalsales (lowercase)
       }));
     }
     return [];
@@ -69,16 +70,17 @@ const reportService = {
     const data = response.data.data || [];
 
     // Transform backend field names to match frontend expectations
+    // NOTE: Backend SQL returns lowercase field names (customerid, customername, etc.)
     if (Array.isArray(data)) {
       return data.map(item => ({
-        customerId: item.customerId,
-        customerName: item.customerName,
-        customerPhone: item.customerPhone,
-        orderCount: parseInt(item.totalOrders || 0),  // Backend: totalOrders -> Frontend: orderCount
-        totalRevenue: parseFloat(item.totalRevenue || 0),
-        avgOrderValue: parseFloat(item.avgOrderValue || 0),
-        lastPurchase: item.lastPurchase,
-        firstPurchase: item.firstPurchase
+        customerId: item.customerid || item.customerId,  // Backend: customerid (lowercase)
+        customerName: item.customername || item.customerName,  // Backend: customername (lowercase)
+        customerPhone: item.customerphone || item.customerPhone,  // Backend: customerphone (lowercase)
+        orderCount: parseInt(item.totalorders || item.totalOrders || 0),  // Backend: totalorders (lowercase) -> Frontend: orderCount
+        totalRevenue: parseFloat(item.totalrevenue || item.totalRevenue || 0),  // Backend: totalrevenue (lowercase)
+        avgOrderValue: parseFloat(item.avgordervalue || item.avgOrderValue || 0),  // Backend: avgordervalue (lowercase)
+        lastPurchase: item.lastpurchase || item.lastPurchase,  // Backend: lastpurchase (lowercase)
+        firstPurchase: item.firstpurchase || item.firstPurchase  // Backend: firstpurchase (lowercase)
       }));
     }
     return [];
@@ -89,17 +91,18 @@ const reportService = {
     const data = response.data.data || [];
 
     // Transform backend field names to match frontend expectations
+    // NOTE: Backend SQL returns lowercase field names (itemid, itemname, etc.)
     if (Array.isArray(data)) {
       return data.map(item => ({
-        itemId: item.itemId,
-        productName: item.itemName,  // Backend: itemName -> Frontend: productName
-        itemCode: item.itemCode,
-        itemTypeName: item.itemTypeName,
-        quantitySold: parseInt(item.totalSold || 0),  // Backend: totalSold -> Frontend: quantitySold
-        totalRevenue: parseFloat(item.totalRevenue || 0),
-        avgSellingPrice: parseFloat(item.avgSellingPrice || 0),
-        totalOrders: parseInt(item.totalOrders || 0),
-        estimatedProfit: parseFloat(item.estimatedProfit || 0)
+        itemId: item.itemid || item.itemId,  // Backend: itemid (lowercase)
+        productName: item.itemname || item.itemName,  // Backend: itemname (lowercase) -> Frontend: productName
+        itemCode: item.itemcode || item.itemCode,  // Backend: itemcode (lowercase)
+        itemTypeName: item.itemtypename || item.itemTypeName,  // Backend: itemtypename (lowercase)
+        quantitySold: parseInt(item.totalsold || item.totalSold || 0),  // Backend: totalsold (lowercase) -> Frontend: quantitySold
+        totalRevenue: parseFloat(item.totalrevenue || item.totalRevenue || 0),  // Backend: totalrevenue (lowercase)
+        avgSellingPrice: parseFloat(item.avgsellingprice || item.avgSellingPrice || 0),  // Backend: avgsellingprice (lowercase)
+        totalOrders: parseInt(item.totalorders || item.totalOrders || 0),  // Backend: totalorders (lowercase)
+        estimatedProfit: parseFloat(item.estimatedprofit || item.estimatedProfit || 0)  // Backend: estimatedprofit (lowercase)
       }));
     }
     return [];
@@ -110,11 +113,19 @@ const reportService = {
     const response = await api.get(API_ENDPOINTS.REPORTS_TOP_SELLING, { params });
     const data = response.data.data || [];
 
-    // Transform to match frontend expectations (rename 'totalSold' to 'quantity')
+    // Transform to match frontend expectations (rename 'totalsold' to 'quantity')
+    // NOTE: Backend SQL returns lowercase field names (totalsold, totalrevenue, etc.)
     if (Array.isArray(data)) {
       return data.map(item => ({
-        ...item,
-        quantity: parseInt(item.totalSold || 0)
+        id: item.id,
+        name: item.name,
+        code: item.code,
+        itemType: item.itemtype || item.itemType,  // Backend: itemtype (lowercase)
+        quantity: parseInt(item.totalsold || item.totalSold || 0),  // Backend: totalsold (lowercase) -> Frontend: quantity
+        totalRevenue: parseFloat(item.totalrevenue || item.totalRevenue || 0),  // Backend: totalrevenue (lowercase)
+        totalOrders: parseInt(item.totalorders || item.totalOrders || 0),  // Backend: totalorders (lowercase)
+        avgPrice: parseFloat(item.avgprice || item.avgPrice || 0),  // Backend: avgprice (lowercase)
+        currentStock: parseInt(item.currentstock || item.currentStock || 0)  // Backend: currentstock (lowercase)
       }));
     }
     return [];
@@ -122,7 +133,25 @@ const reportService = {
 
   getSlowMovingProducts: async (params) => {
     const response = await api.get(API_ENDPOINTS.REPORTS_SLOW_MOVING, { params });
-    return response.data.data || [];
+    const data = response.data.data || [];
+
+    // Transform backend field names to match frontend expectations
+    // NOTE: Backend SQL returns lowercase field names (currentstock, avgcost, etc.)
+    if (Array.isArray(data)) {
+      return data.map(item => ({
+        id: item.id,
+        name: item.name,
+        code: item.code,
+        itemType: item.itemtype || item.itemType,  // Backend: itemtype (lowercase)
+        currentStock: parseInt(item.currentstock || item.currentStock || 0),  // Backend: currentstock (lowercase)
+        avgCost: parseFloat(item.avgcost || item.avgCost || 0),  // Backend: avgcost (lowercase)
+        sellingPrice: parseFloat(item.sellingprice || item.sellingPrice || 0),  // Backend: sellingprice (lowercase)
+        soldInPeriod: parseInt(item.soldinperiod || item.soldInPeriod || 0),  // Backend: soldinperiod (lowercase)
+        lastSaleDate: item.lastsaledate || item.lastSaleDate,  // Backend: lastsaledate (lowercase)
+        stockValue: parseFloat(item.stockvalue || item.stockValue || 0)  // Backend: stockvalue (lowercase)
+      }));
+    }
+    return [];
   },
 
   getProductProfitability: async (params) => {
@@ -130,18 +159,19 @@ const reportService = {
     const data = response.data.data || [];
 
     // Transform backend field names to match frontend expectations
+    // NOTE: Backend SQL returns lowercase field names (totalsold, totalrevenue, etc.)
     if (Array.isArray(data)) {
       return data.map(item => ({
         id: item.id,
         name: item.name,
         code: item.code,
-        itemType: item.itemType,
-        totalSold: parseInt(item.totalSold || 0),
-        revenue: parseFloat(item.totalRevenue || 0),  // Backend: totalRevenue -> Frontend: revenue
-        avgSellingPrice: parseFloat(item.avgSellingPrice || 0),
-        cost: parseFloat(item.avgCostPrice || 0),  // Backend: avgCostPrice -> Frontend: cost
-        profit: parseFloat(item.totalProfit || 0),  // Backend: totalProfit -> Frontend: profit
-        margin: parseFloat(item.profitMarginPercent || 0)  // Backend: profitMarginPercent -> Frontend: margin
+        itemType: item.itemtype || item.itemType,  // Backend: itemtype (lowercase)
+        totalSold: parseInt(item.totalsold || item.totalSold || 0),  // Backend: totalsold (lowercase)
+        revenue: parseFloat(item.totalrevenue || item.totalRevenue || 0),  // Backend: totalrevenue (lowercase) -> Frontend: revenue
+        avgSellingPrice: parseFloat(item.avgsellingprice || item.avgSellingPrice || 0),  // Backend: avgsellingprice (lowercase)
+        cost: parseFloat(item.avgcostprice || item.avgCostPrice || 0),  // Backend: avgcostprice (lowercase) -> Frontend: cost
+        profit: parseFloat(item.totalprofit || item.totalProfit || 0),  // Backend: totalprofit (lowercase) -> Frontend: profit
+        margin: parseFloat(item.profitmarginpercent || item.profitMarginPercent || 0)  // Backend: profitmarginpercent (lowercase) -> Frontend: margin
       }));
     }
     return [];
@@ -169,8 +199,15 @@ const reportService = {
     const data = response.data.data || {};
 
     // Backend returns object with byCategory array, extract it
+    // NOTE: Backend SQL returns lowercase field names (itemtype, totalitems, etc.)
     if (data.byCategory && Array.isArray(data.byCategory)) {
-      return data.byCategory;
+      return data.byCategory.map(item => ({
+        itemType: item.itemtype || item.itemType,  // Backend: itemtype (lowercase)
+        totalItems: parseInt(item.totalitems || item.totalItems || 0),  // Backend: totalitems (lowercase)
+        totalQuantity: parseInt(item.totalquantity || item.totalQuantity || 0),  // Backend: totalquantity (lowercase)
+        avgCostPrice: parseFloat(item.avgcostprice || item.avgCostPrice || 0),  // Backend: avgcostprice (lowercase)
+        totalValue: parseFloat(item.totalvalue || item.totalValue || 0)  // Backend: totalvalue (lowercase)
+      }));
     }
     return [];
   },
@@ -180,17 +217,18 @@ const reportService = {
     const data = response.data.data || [];
 
     // Transform backend field names to match frontend expectations
+    // NOTE: Backend SQL returns lowercase field names (itemname, movementtype, etc.)
     if (Array.isArray(data)) {
       return data.map(item => ({
         date: item.date,
-        item: item.itemName,  // Backend: itemName -> Frontend: item
-        itemCode: item.itemCode,
-        type: item.movementType,  // Backend: movementType -> Frontend: type
+        item: item.itemname || item.itemName,  // Backend: itemname (lowercase) -> Frontend: item
+        itemCode: item.itemcode || item.itemCode,  // Backend: itemcode (lowercase)
+        type: item.movementtype || item.movementType,  // Backend: movementtype (lowercase) -> Frontend: type
         description: item.description,
         quantity: parseInt(item.quantity || 0),
-        unitPrice: parseFloat(item.unitPrice || 0),
-        totalAmount: parseFloat(item.totalAmount || 0),
-        referenceCode: item.referenceCode
+        unitPrice: parseFloat(item.unitprice || item.unitPrice || 0),  // Backend: unitprice (lowercase)
+        totalAmount: parseFloat(item.totalamount || item.totalAmount || 0),  // Backend: totalamount (lowercase)
+        referenceCode: item.referencecode || item.referenceCode  // Backend: referencecode (lowercase)
       }));
     }
     return [];
