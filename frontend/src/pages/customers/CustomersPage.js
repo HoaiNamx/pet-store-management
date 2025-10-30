@@ -12,6 +12,7 @@ import {
   IconButton,
   TextField,
   InputAdornment,
+  Button,
 } from '@mui/material';
 import { Edit, Delete, Search } from '@mui/icons-material';
 import customerService from '../../services/customerService';
@@ -29,6 +30,7 @@ function CustomersPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [inputValue, setInputValue] = useState(''); // Temporary input value
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, customer: null });
@@ -61,9 +63,15 @@ function CustomersPage() {
     }
   };
 
-  const handleSearch = (value) => {
-    setSearchTerm(value);
+  const handleSearchClick = () => {
+    setSearchTerm(inputValue);
     setPage(0); // Reset to first page when searching
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchClick();
+    }
   };
 
   const handleAdd = () => {
@@ -112,19 +120,30 @@ function CustomersPage() {
       {error && <ErrorAlert error={error} onClose={() => setError(null)} />}
 
       <Paper sx={{ mb: 2, p: 2 }}>
-        <TextField
-          fullWidth
-          placeholder="Tìm kiếm khách hàng..."
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <TextField
+            fullWidth
+            placeholder="Tìm kiếm theo tên khách hàng..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSearchClick}
+            sx={{ minWidth: 120 }}
+          >
+            Tìm kiếm
+          </Button>
+        </Box>
       </Paper>
 
       <TableContainer component={Paper}>
