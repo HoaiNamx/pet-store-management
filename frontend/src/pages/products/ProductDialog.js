@@ -12,6 +12,9 @@ import {
   InputLabel,
   Select,
   Box,
+  InputAdornment,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import itemService from '../../services/itemService';
 import itemTypeService from '../../services/itemTypeService';
@@ -21,7 +24,7 @@ function ProductDialog({ open, product, onClose }) {
     name: '',
     itemTypeId: '',
     sellingPrice: '',
-    unit: '',
+    unit: 'pcs',
     description: '',
     imageUrl: '',
     status: 'active',
@@ -64,6 +67,13 @@ function ProductDialog({ open, product, onClose }) {
     }
   };
 
+  const handleSwitchChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      status: e.target.checked ? 'active' : 'inactive'
+    }));
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Tên sản phẩm là bắt buộc';
@@ -98,8 +108,14 @@ function ProductDialog({ open, product, onClose }) {
   };
 
   return (
-    <Dialog open={open} onClose={() => onClose(false)} maxWidth="md" fullWidth>
-      <DialogTitle>{product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={() => onClose(false)}
+      maxWidth="md"
+      fullWidth
+      sx={{ '& .MuiDialog-paper': { maxWidth: 700 } }}
+    >
+      <DialogTitle>{product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
           <Grid item xs={12} md={6}>
@@ -142,19 +158,20 @@ function ProductDialog({ open, product, onClose }) {
               error={!!errors.sellingPrice}
               helperText={errors.sellingPrice}
               required
+              InputProps={{
+                endAdornment: <InputAdornment position="end">VND</InputAdornment>,
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Đơn vị"
+              label="Đơn vị tính"
               name="unit"
               value={formData.unit}
               onChange={handleChange}
               error={!!errors.unit}
               helperText={errors.unit}
-              placeholder="kg, hộp, chai,..."
-              required
             />
           </Grid>
           <Grid item xs={12}>
@@ -165,7 +182,8 @@ function ProductDialog({ open, product, onClose }) {
               value={formData.description}
               onChange={handleChange}
               multiline
-              rows={4}
+              rows={3}
+              placeholder="Nhập mô tả sản phẩm"
             />
           </Grid>
           <Grid item xs={12}>
@@ -175,22 +193,19 @@ function ProductDialog({ open, product, onClose }) {
               name="imageUrl"
               value={formData.imageUrl}
               onChange={handleChange}
-              placeholder="https://..."
+              placeholder="Nhập URL hình ảnh"
             />
           </Grid>
           <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel>Trạng thái</InputLabel>
-              <Select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                label="Trạng thái"
-              >
-                <MenuItem value="active">Hoạt động</MenuItem>
-                <MenuItem value="inactive">Ngừng bán</MenuItem>
-              </Select>
-            </FormControl>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.status === 'active'}
+                  onChange={handleSwitchChange}
+                />
+              }
+              label="Hoạt động"
+            />
           </Grid>
         </Grid>
         {errors.submit && (
@@ -199,10 +214,10 @@ function ProductDialog({ open, product, onClose }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={() => onClose(false)} color="inherit">
-          Hủy
+          HỦY
         </Button>
         <Button onClick={handleSubmit} variant="contained" disabled={loading}>
-          {loading ? 'Đang xử lý...' : product ? 'Cập nhật' : 'Thêm mới'}
+          {loading ? 'ĐANG XỬ LÝ...' : product ? 'CẬP NHẬT' : 'THÊM MỚI'}
         </Button>
       </DialogActions>
     </Dialog>
