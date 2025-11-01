@@ -15,6 +15,7 @@ import {
   InputAdornment,
   FormControlLabel,
   Switch,
+  Typography
 } from '@mui/material';
 import itemService from '../../services/itemService';
 import itemTypeService from '../../services/itemTypeService';
@@ -40,7 +41,7 @@ function ProductDialog({ open, product, onClose }) {
         name: product.name || '',
         itemTypeId: product.itemTypeId || '',
         sellingPrice: product.sellingPrice || '',
-        unit: product.unit || '',
+        unit: product.unit || 'pcs',
         description: product.description || '',
         imageUrl: product.imageUrl || '',
         status: product.status || 'active',
@@ -51,7 +52,6 @@ function ProductDialog({ open, product, onClose }) {
   const fetchItemTypes = async () => {
     try {
       const data = await itemTypeService.getAll({ page: 1, limit: 1000 });
-      // Backend now returns { itemTypes: [...], pagination: {...} }
       setItemTypes(data.itemTypes || []);
     } catch (err) {
       console.error('Error fetching item types:', err);
@@ -61,7 +61,6 @@ function ProductDialog({ open, product, onClose }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -99,7 +98,7 @@ function ProductDialog({ open, product, onClose }) {
       } else {
         await itemService.create(formData);
       }
-      onClose(true); // true = should refresh
+      onClose(true);
     } catch (err) {
       setErrors({ submit: err.message || 'Có lỗi xảy ra' });
     } finally {
@@ -113,15 +112,19 @@ function ProductDialog({ open, product, onClose }) {
       onClose={() => onClose(false)}
       maxWidth="md"
       fullWidth
-      sx={{ '& .MuiDialog-paper': { maxWidth: 700 } }}
+      sx={{ '& .MuiDialog-paper': { maxWidth: 700, borderRadius: 2, p: 1 } }}
     >
-      <DialogTitle>{product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
+      <DialogTitle sx={{ fontWeight: 600 }}>
+        {product ? 'Cập nhật sản phẩm' : 'Thêm Sản Phẩm'}
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ pt: 1 }}>
+        <Grid container spacing={2}>
+          {/* Hàng 1: Tên sản phẩm & Loại sản phẩm */}
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Tên sản phẩm"
+              label="Tên sản phẩm *"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -147,20 +150,22 @@ function ProductDialog({ open, product, onClose }) {
               </Select>
             </FormControl>
           </Grid>
+
+          {/* Hàng 2: Giá bán & Đơn vị tính */}
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Giá bán"
+              label="Giá bán *"
               name="sellingPrice"
               type="number"
               value={formData.sellingPrice}
               onChange={handleChange}
               error={!!errors.sellingPrice}
               helperText={errors.sellingPrice}
-              required
               InputProps={{
                 endAdornment: <InputAdornment position="end">VND</InputAdornment>,
               }}
+              required
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -174,6 +179,8 @@ function ProductDialog({ open, product, onClose }) {
               helperText={errors.unit}
             />
           </Grid>
+
+          {/* Hàng 3: Mô tả */}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -186,6 +193,8 @@ function ProductDialog({ open, product, onClose }) {
               placeholder="Nhập mô tả sản phẩm"
             />
           </Grid>
+
+          {/* Hàng 4: Đường dẫn hình ảnh */}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -196,23 +205,32 @@ function ProductDialog({ open, product, onClose }) {
               placeholder="Nhập URL hình ảnh"
             />
           </Grid>
-          <Grid item xs={12}>
+
+          {/* Hàng 5: Công tắc Hoạt động */}
+          <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <FormControlLabel
               control={
                 <Switch
                   checked={formData.status === 'active'}
                   onChange={handleSwitchChange}
+                  color="primary"
                 />
               }
               label="Hoạt động"
             />
           </Grid>
+
+          {errors.submit && (
+            <Grid item xs={12}>
+              <Typography color="error" sx={{ mt: 1 }}>
+                {errors.submit}
+              </Typography>
+            </Grid>
+          )}
         </Grid>
-        {errors.submit && (
-          <Box sx={{ mt: 2, color: 'error.main' }}>{errors.submit}</Box>
-        )}
       </DialogContent>
-      <DialogActions>
+
+      <DialogActions sx={{ pr: 3, pb: 2 }}>
         <Button onClick={() => onClose(false)} color="inherit">
           HỦY
         </Button>
@@ -223,5 +241,4 @@ function ProductDialog({ open, product, onClose }) {
     </Dialog>
   );
 }
-
 export default ProductDialog;
