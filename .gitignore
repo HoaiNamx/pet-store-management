@@ -7,10 +7,18 @@ node_modules/
 
 # Environment files
 .env
-.env.*
-*.env
+.env.local
+.env.production
+.env.development
 backend/.env
 backend/.env.production
+frontend/.env.local
+frontend/.env.production
+
+# BUT allow .env.example files
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 
 # Database
 *.sqlite
