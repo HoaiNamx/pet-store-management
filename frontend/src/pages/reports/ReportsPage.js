@@ -44,37 +44,77 @@ function ReportsPage() {
 
     try {
       let data;
-      const params = {
-        startDate: customDates.startDate,
-        endDate: customDates.endDate,
-      };
+
+      // Build params based on report type requirements
+      let params = {};
 
       switch (reportType) {
         case 'revenue':
+          // Backend expects: fromDate, toDate, groupBy
+          params = {
+            fromDate: customDates.startDate,
+            toDate: customDates.endDate,
+          };
           data = await reportService.getRevenueByPeriod(params);
           break;
         case 'revenue-customer':
+          // Backend expects: fromDate, toDate, limit
+          params = {
+            fromDate: customDates.startDate,
+            toDate: customDates.endDate,
+          };
           data = await reportService.getRevenueByCustomer(params);
           break;
         case 'revenue-product':
+          // Backend expects: fromDate, toDate, itemTypeId, limit
+          params = {
+            fromDate: customDates.startDate,
+            toDate: customDates.endDate,
+          };
           data = await reportService.getRevenueByProduct(params);
           break;
         case 'top-selling':
+          // Backend expects: fromDate, toDate, limit, itemTypeId
+          params = {
+            fromDate: customDates.startDate,
+            toDate: customDates.endDate,
+          };
           data = await reportService.getTopSellingProducts(params);
           break;
         case 'slow-moving':
+          // Backend expects: days, limit (NOT date range!)
+          // Calculate days between dates if custom range is selected
+          const start = new Date(customDates.startDate);
+          const end = new Date(customDates.endDate);
+          const diffTime = Math.abs(end - start);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          params = {
+            days: diffDays || 30,
+          };
           data = await reportService.getSlowMovingProducts(params);
           break;
         case 'profitability':
+          // Backend expects: fromDate, toDate, limit
+          params = {
+            fromDate: customDates.startDate,
+            toDate: customDates.endDate,
+          };
           data = await reportService.getProductProfitability(params);
           break;
         case 'low-stock':
+          // No params needed
           data = await reportService.getLowStockReport();
           break;
         case 'inventory-value':
+          // No params needed
           data = await reportService.getInventoryValue();
           break;
         case 'stock-movement':
+          // Backend expects: fromDate, toDate, itemId, limit
+          params = {
+            fromDate: customDates.startDate,
+            toDate: customDates.endDate,
+          };
           data = await reportService.getStockMovementReport(params);
           break;
         default:
