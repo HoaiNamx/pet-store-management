@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -35,11 +35,7 @@ function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, customer: null });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [page, rowsPerPage, searchTerm]); // Re-fetch when page, rowsPerPage, or searchTerm changes
-
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
       let data;
@@ -61,7 +57,11 @@ function CustomersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, page, rowsPerPage]);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   const handleSearchClick = () => {
     setSearchTerm(inputValue);
