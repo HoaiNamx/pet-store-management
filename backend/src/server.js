@@ -29,6 +29,7 @@ const corsOptions = {
         const allowedOrigins = [
             'http://localhost:3000',              // Local development
             'http://localhost:3001',              // Alternative local port
+            'https://elegant-boba-2ca7b8.netlify.app',  // Production Netlify
             process.env.FRONTEND_URL              // Production URL from env
         ].filter(Boolean); // Remove undefined values
 
@@ -41,10 +42,13 @@ const corsOptions = {
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            // In development, log the rejected origin
-            if (process.env.NODE_ENV === 'development') {
-                console.log('CORS rejected origin:', origin);
+            // Also allow any Netlify preview/branch deployments
+            if (origin && origin.includes('.netlify.app')) {
+                return callback(null, true);
             }
+
+            // In production, log the rejected origin for debugging
+            console.log('CORS rejected origin:', origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
