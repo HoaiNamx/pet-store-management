@@ -3,6 +3,9 @@
   command = "npm run build"
   publish = "build"
 
+[build.environment]
+  NODE_VERSION = "18"
+
 # Redirect rules for SPA (Single Page Application)
 [[redirects]]
   from = "/*"
