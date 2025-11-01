@@ -141,6 +141,8 @@ function ProductDialog({ open, product, onClose }) {
                 value={formData.itemTypeId}
                 onChange={handleChange}
                 label="Loại sản phẩm *"
+                fullWidth
+                sx={{ minWidth: 120 }}
               >
                 {itemTypes.map((type) => (
                   <MenuItem key={type.id} value={type.id}>
