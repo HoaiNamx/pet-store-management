@@ -354,12 +354,12 @@ const reportController = {
             const { fromDate, toDate, limit = 10, itemTypeId } = req.query;
 
             let dateFilter = 'WHERE s.status = \'completed\'';
-            if (fromDate) dateFilter += ` AND s.sale_date >= '${fromDate}'`;
-            if (toDate) dateFilter += ` AND s.sale_date <= '${toDate}'`;
+            if (fromDate) dateFilter += ` AND s.sale_date >= '${fromDate} 00:00:00'`;
+            if (toDate) dateFilter += ` AND s.sale_date <= '${toDate} 23:59:59'`;
             if (itemTypeId) dateFilter += ` AND i.item_type_id = ${itemTypeId}`;
 
             const [results] = await sequelize.query(`
-                SELECT 
+                SELECT
                     i.id,
                     i.name,
                     i.code,
@@ -368,14 +368,14 @@ const reportController = {
                     SUM(sd.subtotal) as totalRevenue,
                     COUNT(DISTINCT s.id) as totalOrders,
                     AVG(sd.unit_price) as avgPrice,
-                    inv.quantity as currentStock
+                    COALESCE(MAX(inv.quantity), 0) as currentStock
                 FROM sale_details sd
                 JOIN items i ON sd.item_id = i.id
                 JOIN item_types it ON i.item_type_id = it.id
                 JOIN sales s ON sd.sale_id = s.id
                 LEFT JOIN inventory inv ON i.id = inv.item_id
                 ${dateFilter}
-                GROUP BY i.id, i.name, i.code, it.name, inv.quantity
+                GROUP BY i.id, i.name, i.code, it.name
                 ORDER BY totalSold DESC
                 LIMIT ${parseInt(limit)}
             `);
@@ -402,22 +402,22 @@ const reportController = {
             cutoffDate.setDate(cutoffDate.getDate() - parseInt(days));
 
             const [results] = await sequelize.query(`
-                SELECT 
+                SELECT
                     i.id,
                     i.name,
                     i.code,
                     it.name as itemType,
-                    inv.quantity as currentStock,
-                    inv.avg_cost as avgCost,
+                    COALESCE(inv.quantity, 0) as currentStock,
+                    COALESCE(inv.avg_cost, 0) as avgCost,
                     i.selling_price as sellingPrice,
                     COALESCE(recent_sales.totalSold, 0) as soldInPeriod,
-                    COALESCE(recent_sales.lastSaleDate, null) as lastSaleDate,
-                    (inv.quantity * inv.avg_cost) as stockValue
+                    recent_sales.lastSaleDate as lastSaleDate,
+                    (COALESCE(inv.quantity, 0) * COALESCE(inv.avg_cost, 0)) as stockValue
                 FROM items i
                 JOIN item_types it ON i.item_type_id = it.id
                 LEFT JOIN inventory inv ON i.id = inv.item_id
                 LEFT JOIN (
-                    SELECT 
+                    SELECT
                         sd.item_id,
                         SUM(sd.quantity) as totalSold,
                         MAX(s.sale_date) as lastSaleDate
@@ -429,8 +429,8 @@ const reportController = {
                 ) recent_sales ON i.id = recent_sales.item_id
                 WHERE i.is_active = 1
                 AND (recent_sales.totalSold IS NULL OR recent_sales.totalSold <= 2)
-                AND inv.quantity > 0
-                ORDER BY soldInPeriod ASC, inv.quantity DESC
+                AND COALESCE(inv.quantity, 0) > 0
+                ORDER BY soldInPeriod ASC, COALESCE(inv.quantity, 0) DESC
                 LIMIT ${parseInt(limit)}
             `);
 
@@ -458,11 +458,11 @@ const reportController = {
             const { fromDate, toDate, limit = 20 } = req.query;
 
             let dateFilter = 'WHERE s.status = \'completed\'';
-            if (fromDate) dateFilter += ` AND s.sale_date >= '${fromDate}'`;
-            if (toDate) dateFilter += ` AND s.sale_date <= '${toDate}'`;
+            if (fromDate) dateFilter += ` AND s.sale_date >= '${fromDate} 00:00:00'`;
+            if (toDate) dateFilter += ` AND s.sale_date <= '${toDate} 23:59:59'`;
 
             const [results] = await sequelize.query(`
-                SELECT 
+                SELECT
                     i.id,
                     i.name,
                     i.code,
@@ -470,16 +470,16 @@ const reportController = {
                     SUM(sd.quantity) as totalSold,
                     SUM(sd.subtotal) as totalRevenue,
                     AVG(sd.unit_price) as avgSellingPrice,
-                    COALESCE(AVG(sd.cost_price), inv.avg_cost, 0) as avgCostPrice,
-                    SUM(sd.subtotal) - SUM(sd.quantity * COALESCE(sd.cost_price, inv.avg_cost, 0)) as totalProfit,
-                    ((AVG(sd.unit_price) - COALESCE(AVG(sd.cost_price), inv.avg_cost, 0)) / AVG(sd.unit_price) * 100) as profitMarginPercent
+                    COALESCE(AVG(sd.cost_price), MAX(inv.avg_cost), 0) as avgCostPrice,
+                    SUM(sd.subtotal) - SUM(sd.quantity * COALESCE(sd.cost_price, MAX(inv.avg_cost), 0)) as totalProfit,
+                    ((AVG(sd.unit_price) - COALESCE(AVG(sd.cost_price), MAX(inv.avg_cost), 0)) / NULLIF(AVG(sd.unit_price), 0) * 100) as profitMarginPercent
                 FROM sale_details sd
                 JOIN items i ON sd.item_id = i.id
                 JOIN item_types it ON i.item_type_id = it.id
                 JOIN sales s ON sd.sale_id = s.id
                 LEFT JOIN inventory inv ON i.id = inv.item_id
                 ${dateFilter}
-                GROUP BY i.id, i.name, i.code, it.name, inv.avg_cost
+                GROUP BY i.id, i.name, i.code, it.name
                 HAVING totalSold > 0
                 ORDER BY totalProfit DESC
                 LIMIT ${parseInt(limit)}
@@ -543,12 +543,12 @@ const reportController = {
     getInventoryValue: async (req, res) => {
         try {
             const [results] = await sequelize.query(`
-                SELECT 
+                SELECT
                     it.name as itemType,
-                    COUNT(i.id) as totalItems,
-                    SUM(inv.quantity) as totalQuantity,
-                    SUM(inv.quantity * COALESCE(inv.avg_cost, 0)) as totalValue,
-                    AVG(COALESCE(inv.avg_cost, 0)) as avgCostPrice
+                    COUNT(DISTINCT i.id) as totalItems,
+                    COALESCE(SUM(inv.quantity), 0) as totalQuantity,
+                    COALESCE(SUM(inv.quantity * COALESCE(inv.avg_cost, 0)), 0) as totalValue,
+                    COALESCE(AVG(COALESCE(inv.avg_cost, 0)), 0) as avgCostPrice
                 FROM inventory inv
                 JOIN items i ON inv.item_id = i.id
                 JOIN item_types it ON i.item_type_id = it.id
@@ -558,10 +558,10 @@ const reportController = {
             `);
 
             const [summary] = await sequelize.query(`
-                SELECT 
+                SELECT
                     COUNT(DISTINCT i.id) as totalProducts,
-                    SUM(inv.quantity) as totalQuantity,
-                    SUM(inv.quantity * COALESCE(inv.avg_cost, 0)) as totalValue,
+                    COALESCE(SUM(inv.quantity), 0) as totalQuantity,
+                    COALESCE(SUM(inv.quantity * COALESCE(inv.avg_cost, 0)), 0) as totalValue,
                     COUNT(CASE WHEN inv.quantity <= inv.min_stock THEN 1 END) as lowStockItems,
                     COUNT(CASE WHEN inv.quantity = 0 THEN 1 END) as outOfStockItems
                 FROM inventory inv
@@ -593,8 +593,8 @@ const reportController = {
 
             let dateFilter = '';
             const conditions = [];
-            if (fromDate) conditions.push(`date >= '${fromDate}'`);
-            if (toDate) conditions.push(`date <= '${toDate}'`);
+            if (fromDate) conditions.push(`date >= '${fromDate} 00:00:00'`);
+            if (toDate) conditions.push(`date <= '${toDate} 23:59:59'`);
             if (itemId) conditions.push(`item_id = ${itemId}`);
 
             if (conditions.length > 0) {
@@ -604,7 +604,7 @@ const reportController = {
             const [results] = await sequelize.query(`
                 SELECT * FROM (
                     -- Stock In movements
-                    SELECT 
+                    SELECT
                         sid.item_id,
                         i.name as itemName,
                         i.code as itemCode,
@@ -619,11 +619,11 @@ const reportController = {
                     JOIN stock_ins si ON sid.stock_in_id = si.id
                     JOIN items i ON sid.item_id = i.id
                     WHERE si.status = 'completed'
-                    
+
                     UNION ALL
-                    
+
                     -- Sale movements
-                    SELECT 
+                    SELECT
                         sd.item_id,
                         i.name as itemName,
                         i.code as itemCode,
