@@ -70,16 +70,24 @@ function CustomerDialog({ open, customer, onClose }) {
   };
 
   return (
-    <Dialog open={open} onClose={() => onClose(false)} maxWidth="md" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={open}
+      onClose={() => onClose(false)}
+      maxWidth="md"
+      fullWidth
+      sx={{ '& .MuiDialog-paper': { maxWidth: 700, borderRadius: 2, p: 1 } }}
+    >
+      <DialogTitle sx={{ fontWeight: 600 }}>
         {customer ? 'Cập nhật khách hàng' : 'Thêm khách hàng mới'}
       </DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
+
+      <DialogContent dividers sx={{ pt: 1 }}>
+        <Grid container spacing={2}>
+          {/* Hàng 1: Tên khách hàng & Số điện thoại */}
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Tên khách hàng"
+              label="Tên khách hàng *"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -88,10 +96,10 @@ function CustomerDialog({ open, customer, onClose }) {
               required
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Số điện thoại"
+              label="Số điện thoại *"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -100,6 +108,8 @@ function CustomerDialog({ open, customer, onClose }) {
               required
             />
           </Grid>
+
+          {/* Hàng 2: Email */}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -108,8 +118,11 @@ function CustomerDialog({ open, customer, onClose }) {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              placeholder="Nhập email khách hàng"
             />
           </Grid>
+
+          {/* Hàng 3: Địa chỉ */}
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -119,19 +132,24 @@ function CustomerDialog({ open, customer, onClose }) {
               onChange={handleChange}
               multiline
               rows={4}
+              placeholder="Nhập địa chỉ khách hàng"
             />
           </Grid>
+
+          {errors.submit && (
+            <Grid item xs={12}>
+              <Box sx={{ color: 'error.main' }}>{errors.submit}</Box>
+            </Grid>
+          )}
         </Grid>
-        {errors.submit && (
-          <Box sx={{ mt: 2, color: 'error.main' }}>{errors.submit}</Box>
-        )}
       </DialogContent>
-      <DialogActions>
+
+      <DialogActions sx={{ pr: 3, pb: 2 }}>
         <Button onClick={() => onClose(false)} color="inherit">
-          Hủy
+          HỦY
         </Button>
         <Button onClick={handleSubmit} variant="contained" disabled={loading}>
-          {loading ? 'Đang xử lý...' : customer ? 'Cập nhật' : 'Thêm mới'}
+          {loading ? 'ĐANG XỬ LÝ...' : customer ? 'CẬP NHẬT' : 'THÊM MỚI'}
         </Button>
       </DialogActions>
     </Dialog>
