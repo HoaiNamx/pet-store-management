@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -28,11 +28,7 @@ function SaleDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchSaleDetail();
-  }, [id]);
-
-  const fetchSaleDetail = async () => {
+  const fetchSaleDetail = useCallback(async () => {
     try {
       setLoading(true);
       const data = await salesService.getById(id);
@@ -43,7 +39,11 @@ function SaleDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchSaleDetail();
+  }, [fetchSaleDetail]);
 
   const getStatusChip = (status) => {
     const statusConfig = {

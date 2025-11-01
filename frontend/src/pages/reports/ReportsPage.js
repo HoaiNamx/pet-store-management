@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -17,14 +17,12 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import reportService from '../../services/reportService';
 import { formatCurrency, formatDate, getDateRange } from '../../utils/formatters';
 import Loading from '../../components/common/Loading';
 import ErrorAlert from '../../components/common/ErrorAlert';
 import PageHeader from '../../components/common/PageHeader';
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 function ReportsPage() {
   const [reportType, setReportType] = useState('revenue');
@@ -34,11 +32,7 @@ function ReportsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadReport();
-  }, [reportType, dateRange]);
-
-  const loadReport = async () => {
+  const loadReport = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -127,7 +121,11 @@ function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reportType, customDates]);
+
+  useEffect(() => {
+    loadReport();
+  }, [loadReport]);
 
   const handleDateRangeChange = (range) => {
     setDateRange(range);

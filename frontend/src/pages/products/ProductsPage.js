@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -37,11 +37,7 @@ function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, product: null });
 
-  useEffect(() => {
-    fetchProducts();
-  }, [page, rowsPerPage, searchTerm]); // Re-fetch when page, rowsPerPage, or searchTerm changes
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       let data;
@@ -63,7 +59,11 @@ function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, page, rowsPerPage]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleSearchClick = () => {
     setSearchTerm(inputValue);

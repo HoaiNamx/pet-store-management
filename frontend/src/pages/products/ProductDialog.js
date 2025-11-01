@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Box,
   InputAdornment,
   FormControlLabel,
   Switch,

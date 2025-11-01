@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -11,9 +11,8 @@ import {
   TablePagination,
   Chip,
   IconButton,
-  Button,
 } from '@mui/material';
-import { Visibility, Cancel, Add } from '@mui/icons-material';
+import { Visibility, Cancel } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import salesService from '../../services/salesService';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
@@ -32,11 +31,7 @@ function SalesPage() {
   const [cancelDialog, setCancelDialog] = useState({ open: false, sale: null });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchSales();
-  }, [page, rowsPerPage]);
-
-  const fetchSales = async () => {
+  const fetchSales = useCallback(async () => {
     try {
       setLoading(true);
       const data = await salesService.getAll({ page: page + 1, limit: rowsPerPage });
@@ -48,7 +43,11 @@ function SalesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, rowsPerPage]);
+
+  useEffect(() => {
+    fetchSales();
+  }, [fetchSales]);
 
   const handleView = (sale) => {
     navigate(`/sales/${sale.id}`);
