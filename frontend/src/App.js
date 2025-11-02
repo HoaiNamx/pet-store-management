@@ -8,6 +8,7 @@ import MainLayout from './components/layout/MainLayout';
 // Pages
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProductsPage from './pages/products/ProductsPage';
+import ItemTypesPage from './pages/item-types/ItemTypesPage';
 import InventoryPage from './pages/inventory/InventoryPage';
 import StockInPage from './pages/inventory/StockInPage';
 import SalesPage from './pages/sales/SalesPage';
@@ -49,6 +50,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="products" element={<ProductsPage />} />
+            <Route path="item-types" element={<ItemTypesPage />} />
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="stock-in" element={<StockInPage />} />
             <Route path="sales" element={<SalesPage />} />
