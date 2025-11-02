@@ -46,6 +46,7 @@ function NewSalePage() {
       discount: '',
     },
   ]);
+  const [amountGiven, setAmountGiven] = useState(''); // Số tiền khách đưa
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -103,6 +104,12 @@ function NewSalePage() {
       const finalPrice = sellingPrice - discount;
       return sum + qty * finalPrice;
     }, 0);
+  };
+
+  const calculateChange = () => {
+    const total = calculateTotal();
+    const given = parseFloat(amountGiven) || 0;
+    return given - total;
   };
 
   const handleSubmit = async () => {
@@ -179,9 +186,13 @@ function NewSalePage() {
               <InputLabel>Phương thức thanh toán</InputLabel>
               <Select
                 value={formData.paymentMethod}
-                onChange={(e) =>
-                  setFormData({ ...formData, paymentMethod: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, paymentMethod: e.target.value });
+                  // Reset amountGiven when payment method changes
+                  if (e.target.value !== 'cash') {
+                    setAmountGiven('');
+                  }
+                }}
                 label="Phương thức thanh toán"
               >
                 <MenuItem value="cash">Tiền mặt</MenuItem>
@@ -190,6 +201,40 @@ function NewSalePage() {
               </Select>
             </FormControl>
           </Grid>
+
+          {/* Cash payment fields - only show when payment method is cash */}
+          {formData.paymentMethod === 'cash' && (
+            <>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Số tiền khách đưa"
+                  value={amountGiven}
+                  onChange={(e) => setAmountGiven(e.target.value)}
+                  placeholder="0"
+                  inputProps={{ min: 0, step: 1000 }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="Số tiền trả lại"
+                  value={formatCurrency(calculateChange())}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      fontWeight: 'bold',
+                      color: calculateChange() >= 0 ? 'success.main' : 'error.main',
+                    },
+                  }}
+                />
+              </Grid>
+            </>
+          )}
+
           <Grid item xs={12}>
             <TextField
               fullWidth
