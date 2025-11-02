@@ -98,7 +98,7 @@ function ProductDialog({ open, product, onClose }) {
         itemTypeId: formData.itemTypeId,
         sellingPrice: formData.sellingPrice,
         unit: formData.unit,
-        description: formData.description,
+        description: formData.description || undefined, // Optional field
         imagePath: formData.imageUrl || undefined, // Convert imageUrl to imagePath, optional
         isActive: formData.status === 'active', // Convert status string to isActive boolean
       };
