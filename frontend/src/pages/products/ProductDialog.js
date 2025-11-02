@@ -42,8 +42,8 @@ function ProductDialog({ open, product, onClose }) {
         sellingPrice: product.sellingPrice || '',
         unit: product.unit || 'pcs',
         description: product.description || '',
-        imageUrl: product.imageUrl || '',
-        status: product.status || 'active',
+        imageUrl: product.imagePath || '', // Backend uses imagePath
+        status: product.isActive ? 'active' : 'inactive', // Backend uses isActive (boolean)
       });
     }
   }, [product]);
@@ -92,10 +92,21 @@ function ProductDialog({ open, product, onClose }) {
 
     setLoading(true);
     try {
+      // Transform frontend data to backend format
+      const backendData = {
+        name: formData.name,
+        itemTypeId: formData.itemTypeId,
+        sellingPrice: formData.sellingPrice,
+        unit: formData.unit,
+        description: formData.description,
+        imagePath: formData.imageUrl || undefined, // Convert imageUrl to imagePath, optional
+        isActive: formData.status === 'active', // Convert status string to isActive boolean
+      };
+
       if (product) {
-        await itemService.update(product.id, formData);
+        await itemService.update(product.id, backendData);
       } else {
-        await itemService.create(formData);
+        await itemService.create(backendData);
       }
       onClose(true);
     } catch (err) {
