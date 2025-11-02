@@ -23,6 +23,7 @@ import {
   Assessment,
   Category,
   LocalShipping,
+  Label,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
@@ -30,6 +31,7 @@ const drawerWidth = 240;
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
   { text: 'Sản phẩm', icon: <Category />, path: '/products' },
+  { text: 'Loại sản phẩm', icon: <Label />, path: '/item-types' },
   { text: 'Tồn kho', icon: <Inventory />, path: '/inventory' },
   { text: 'Nhập hàng', icon: <LocalShipping />, path: '/stock-in' },
   { text: 'Bán hàng', icon: <ShoppingCart />, path: '/sales' },
